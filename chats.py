@@ -3,12 +3,13 @@ import requests, re, datetime
 import zd_creds
 
 def chats_taken(name):
-    new_chat_day = str(datetime.date.today()) + "T00:00:00Z"
-    chats_taken_raw = requests.get(
-        "https://www.zopim.com/api/v2/chats/search?q=timestamp: [" + new_chat_day + " TO *] AND agent_names: " + name,
-        headers=zd_creds.zdc_headers)
+    new_chat_day = str(datetime.date.today())+"T00:00:00Z"
 
-    payload = str(chats_taken_raw.json()["count"])
+    name_reggie = re.compile(r'([a-zA-z]+\s[a-zA-Z])')
+    assignee_name = name_reggie.search(name).group(1)
+
+    chats_taken_raw = requests.get("https://www.zopim.com/api/v2/chats/search?q=timestamp: [" + new_chat_day + " TO *] AND \"{}\"".format(assignee_name), headers=zd_creds.zdc_headers)
+    payload =  str(chats_taken_raw.json()["count"])
 
     return payload
 
@@ -44,6 +45,19 @@ def get_average_chat():
         return payload
     else:
         payload = {"item": [{"value": 0, "text": "Not enough data."}]}
+        return payload
+
+def get_longest_wait():
+    wait_raw = requests.get("https://rtm.zopim.com/stream/chats", headers=zd_creds.zdc_headers)
+
+    wait_num_raw = wait_raw.json()["content"]["data"]["waiting_time_max"]
+
+    if wait_num_raw != None:
+        wait_milli = int(wait_num_raw) * 1000
+        payload = {"item": [{"value": wait_milli, "text": "Longest Wait Time", "type": "time_duration"}]}
+        return payload
+    else:
+        payload = {"item": [{"value": 0, "text": "No one is waiting, Huzzah!"}]}
         return payload
 
 def get_incoming_chats():

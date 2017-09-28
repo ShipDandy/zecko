@@ -2,18 +2,15 @@ import requests, re, sqlite3
 
 import zd_creds
 
-def get_zdc_departments():
-    get_agent_list = requests.get("https://www.zopim.com/api/v2/departments", headers=zd_creds.zdc_headers)
+def get_zdc_agents():
+    get_agent_list = (requests.get("https://www.zopim.com/api/v2/agents", headers=zd_creds.zdc_headers)).json()
 
-    member_grab = re.compile(r'members.\:\s\[(.+?)\]')
-    step1 = member_grab.findall(str(get_agent_list.text))
-    
-    just_numbers = re.compile(r'(\d+)')
-    step2 = just_numbers.findall(str(step1))
+    agent_numbers = []
 
-    return step2
+    for each in get_agent_list:
+        agent_numbers.append(str(each["id"]))
 
-zdc_numbers = get_zdc_departments()
+    return agent_numbers
 
 def get_ids(each):
     zdc_agent_info = requests.get("https://www.zopim.com/api/v2/agents/" + each, headers=zd_creds.zdc_headers)
@@ -24,7 +21,8 @@ def get_ids(each):
     return (each, agent_name)
 
 
-def build_agent_db(zdc_numbers):
+def build_agent_db():
+    zdc_numbers = get_zdc_agents()
     runninglist = []
     connection = sqlite3.connect("zdAgents.db")
     cursor = connection.cursor()
@@ -47,7 +45,7 @@ def build_agent_db(zdc_numbers):
 
     print("donezo")
 
-#build_agent_db(zdc_numbers)
+#build_agent_db()
 
 def update_database():
     fresh_list = get_zdc_departments()

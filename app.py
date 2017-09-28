@@ -14,22 +14,6 @@ app = Flask(__name__)
 def home():
     return jsonify("Get Outta Here Would Ya!")
 
-stuff = [
-    {
-        "title": {"text": "Chats Taken: 8"}
-    },
-    {
-        "title": {"text": "Tickets in OPEN: 2"}
-    },
-    {
-        "title": {"text": "Tickets in SOLVED: 99"}
-    }
-]
-
-@app.route("/sample")
-def sample():
-    return jsonify(stuff)
-
 @app.route("/agents")
 def list_agents():
     return jsonify(agents.list_agents_in_db())
@@ -49,7 +33,7 @@ def add_agent():
     return jsonify(agents.add_agent_to_db(agent_spec))
 
 @app.route("/agents/delete_agent", methods=["DELETE"])
-def delete_agent(name):
+def delete_agent():
     data = request.get_json()
     return jsonify(agents.delete_agent_from_db(data["zd_id"]))
 
@@ -95,6 +79,10 @@ def average_wait_time():
 @app.route("/chats/average_chat")
 def average_chat_time():
     return jsonify(chats.get_average_chat())
+
+@app.route("/chats/longest_wait")
+def longest_wait_time():
+    return jsonify(chats.get_longest_wait())
 
 @app.route("/chats/incoming_chats")
 def incoming_chats():
