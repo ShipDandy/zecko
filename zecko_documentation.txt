@@ -1,0 +1,245 @@
+// Zecko Version 0.99 Documentation
+
+// Zecko is a Flask based app that takes requests via API and then uses Zendesk Support and Zendesk Chat APIs to return ShipStation Support information in a JSON format specific to Geckoboard custom widget standards.
+
+
+// 01. Zecko Requirements
+
+// 01a. Zecko URL Base
+// All API requests will have a base URL of https://peaceful-forest-72789.herokuapp.com after which the specific endpoint is appended.
+
+// 01b. Zecko Headers
+// If you are interacting with Zecko outside of Geckoboard you will need to have the following headers in place:
+// // "Content-Type": "application/json"
+
+
+// 02. Zecko Database
+// Currently the Zecko database holds the agent name and the Zendesk ID of any agent who is enrolled in Zendesk Chat. The following endpoints serve as operations on the Zecko database.
+
+// 02a. List Agents in Database
+// This endpoint can be used to return a JSON dictionary of all agents currently in the Zecko database along with their Zendesk ID.
+
+    /* Request
+        Endpoint: /agents
+        HTTP Verb: GET
+        Body: N/A
+    */
+
+    /* Response
+        [
+            {
+                "Fluffy Bunny": {
+                    "id": "123456789"
+                }
+            },
+            {
+                "Pretty Pony": {
+                    "id": "987654321"
+                }
+            }
+        ]
+    */
+
+// 02b. Update Database
+// If mulitple agents have been added to Zendesk Chat the update database endpoint can be called to scan for new entries in Zendesk Chat's agent list and add agents to the database. The response will return the number of agents that have been added.
+
+    /* Request
+        Endpoint: /agents/build_db
+        HTTP Verb: GET
+        Body: N/A
+    */
+
+    /* Response
+        {"X agents added to database"}
+    */
+
+// 02c. Add Agent to Database
+// If you wish to add an agent individually you can do so by sending a request with the agent's name and Zendesk ID in the body. If the agent is already in the database a notification message will be returned.
+
+    /* Request
+        Endpoint: /agents/add_agent
+        HTTP Verb: POST
+        Body:
+        {
+            "zd_id": "99",
+            "agentName": "Gally"
+        }
+    */
+
+    /* Response
+        "Agent Gally, Zendesk ID 99 added to database."
+    */
+
+// 02d. Delete Agent from Database
+// Should an agent need to be removed from Zecko that can be done sending a delete request along with the agent Zendesk ID included in the body of the request.
+
+
+    /* Request
+        Endpoint: /agents/delete_agent
+        HTTP Verb: DELETE
+        Body:
+        {
+            "zd_id": "99"
+        }
+    */
+
+    /* Response
+        {"Agent 99 removed from database."}
+    */
+
+// 02e. Update Agent Name in Database
+// If an agent's name has changed in Zendesk Chat or is otherwise inconsistent with what is stored in Zendesk Chat the agent's information needs to be updated in Zecko's database. The agent's Zendesk ID and adjusted name will need to be sent in the body of the request.
+
+    /* Request
+        Endpoint: /agents/update_name
+        HTTP Verb: PUT
+        Body:
+        {
+            "newName": "Alita",
+            "zd_id": "99"
+        }
+    */
+
+    /* Response
+        {"Agent name changed to Alita."}
+    */
+
+
+// 03. Geckoboard Interactions
+
+// 03a. Real Time Agent Metrics
+// Daily agent metrics can be displayed through a custom widget by calling on metrics endpoint. The agent's first name and last name/initial need to be included in the URL and separated by an underscore. Due to limitations in Zendesk Chat an agent needs to have at the very least a last initial set to identify them from another agent with the same first name.
+
+    /* Widget Setup
+        Widget Class: Custom Widget
+        Widget Type: List
+        Setting: {
+            Title: Agent Name
+            Method: Polling
+            URL data feed: domain/metrics/Agent_Name
+            API key: N/A
+            Append URL tokens: No
+            Data Feed Format: JSON
+            HTTP Request Type: GET
+            Reload Time: 1 minute
+            }
+    */
+
+// 03b. Agents Online
+// Widget displays number of agents online versus away and is accompanied by a color bar.
+
+
+    /* Widget Setup
+        Widget Class: Custom Widget
+        Widget Type: RAG Column and Numbers
+        Setting: {
+            Title: Agents Online
+            Method: Polling
+            URL data feed: /chats/online_status
+            API key: N/A
+            Append URL tokens: No
+            Data Feed Format: JSON
+            HTTP Request Type: GET
+            Reload Time: 1 minute
+            }
+    */
+
+// 03c. Incoming Chats
+// Simple number display on chats yet to be taken/assigned.
+
+    /* Widget Setup
+        Widget Class: Custom Widget
+        Widget Type: Number and Secondary Stat
+        Setting: {
+            Title: N/A
+            Method: Polling
+            URL data feed: /chats/incoming_chats
+            API key: N/A
+            Append URL tokens: No
+            Data Feed Format: JSON
+            HTTP Request Type: GET
+            Reload Time: 1 minute
+            }
+    */
+
+// 03c. Average Wait Time
+// Simple number display of average wait time for incoming chats.
+
+    /* Widget Setup
+        Widget Class: Custom Widget
+        Widget Type: Number and Secondary Stat
+        Setting: {
+            Title: N/A
+            Method: Polling
+            URL data feed: /chats/average_wait
+            API key: N/A
+            Append URL tokens: No
+            Data Feed Format: JSON
+            HTTP Request Type: GET
+            Reload Time: 1 minute
+            }
+    */
+
+// 03d. Longest Wait Time
+// Simple number display of the longest a user has been waiting to chat.
+
+    /* Widget Setup
+        Widget Class: Custom Widget
+        Widget Type: Number and Secondary Stat
+        Setting: {
+            Title: N/A
+            Method: Polling
+            URL data feed: /chats/longest_wait
+            API key: N/A
+            Append URL tokens: No
+            Data Feed Format: JSON
+            HTTP Request Type: GET
+            Reload Time: 1 minute
+            }
+    */
+
+// 03e. Average Chat Duration
+// Simple number display of the average chat length notated in minutes and seconds.
+
+    /* Widget Setup
+        Widget Class: Custom Widget
+        Widget Type: Number and Secondary Stat
+        Setting: {
+            Title: N/A
+            Method: Polling
+            URL data feed: /chats/average_chat
+            API key: N/A
+            Append URL tokens: No
+            Data Feed Format: JSON
+            HTTP Request Type: GET
+            Reload Time: 1 minute
+            }
+    */
+
+
+//------------------------//
+
+    /* Widget Setup
+        Widget Class: 
+        Widget Type: 
+        Setting: {
+            Title: 
+            Method: Polling
+            URL data feed: 
+            API key: N/A
+            Append URL tokens: No
+            Data Feed Format: JSON
+            HTTP Request Type: GET
+            Reload Time: 1 minute
+            }
+    */
+
+    /* Request
+        Endpoint:
+        HTTP Verb: GET
+        Body: N/A
+    */
+
+    /* Response
+        message
+    */
