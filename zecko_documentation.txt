@@ -215,31 +215,3 @@
             Reload Time: 1 minute
             }
     */
-
-
-//------------------------//
-
-    /* Widget Setup
-        Widget Class: 
-        Widget Type: 
-        Setting: {
-            Title: 
-            Method: Polling
-            URL data feed: 
-            API key: N/A
-            Append URL tokens: No
-            Data Feed Format: JSON
-            HTTP Request Type: GET
-            Reload Time: 1 minute
-            }
-    */
-
-    /* Request
-        Endpoint:
-        HTTP Verb: GET
-        Body: N/A
-    */
-
-    /* Response
-        message
-    */
